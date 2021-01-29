@@ -675,6 +675,9 @@
       ]
     }
   },
+  "weatherWidget": {
+    "endpoint": "/api/ext/widget-weather/current"
+  },
   "orders": {
     "directBackendSync": true,
     "endpoint": "/api/order",
