@@ -20,7 +20,7 @@
               data-testid="productName"
             >
               {{ getCurrentProduct.name | htmlDecode }}
-              <web-share
+              <web-shareProductQuantity
                 :title="getCurrentProduct.name | htmlDecode"
                 text="Check this product!"
                 class="web-share"
@@ -164,20 +164,17 @@ import i18n from '@vue-storefront/i18n'
 import VueOfflineMixin from 'vue-offline/mixin'
 import config from 'config'
 import RelatedProducts from 'theme/components/core/blocks/Product/Related.vue'
-import Reviews from 'theme/components/core/blocks/Reviews/Reviews.vue'
 import AddToCart from 'theme/components/core/AddToCart.vue'
 import GenericSelector from 'theme/components/core/GenericSelector'
 import ColorSelector from 'theme/components/core/ColorSelector.vue'
 import SizeSelector from 'theme/components/core/SizeSelector.vue'
 import Breadcrumbs from 'theme/components/core/Breadcrumbs.vue'
 import ProductAttribute from 'theme/components/core/ProductAttribute.vue'
-import ProductQuantity from 'theme/components/core/ProductQuantity.vue'
 import ProductLinks from 'theme/components/core/ProductLinks.vue'
 import ProductCustomOptions from 'theme/components/core/ProductCustomOptions.vue'
 import ProductBundleOptions from 'theme/components/core/ProductBundleOptions.vue'
 import ProductGallery from 'theme/components/core/ProductGallery'
 import Spinner from 'theme/components/core/Spinner'
-import PromotedOffers from 'theme/components/theme/blocks/PromotedOffers/PromotedOffers'
 import focusClean from 'theme/components/theme/directives/focusClean'
 import WebShare from 'theme/components/theme/WebShare'
 import BaseInputNumber from 'theme/components/core/blocks/Form/BaseInputNumber'
@@ -214,14 +211,11 @@ export default {
     ProductCustomOptions,
     ProductGallery,
     ProductLinks,
-    PromotedOffers,
     RelatedProducts,
-    Reviews,
     SizeSelector,
     WebShare,
     SizeGuide,
     LazyHydrate,
-    ProductQuantity,
     ProductPrice,
     ProductQtyIncrement
   },
