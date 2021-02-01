@@ -11,16 +11,16 @@
               :product="getCurrentProduct"
             />
           </div>
-          <div class="col-xs-12 col-md-6 data">
+          <div class="col-xs-12 col-md-6 pl20 pr10 data">
             <breadcrumbs
-              class="pt40 pb20 hidden-xs"
+              class="pt50 mt10 pb15 hidden-xs"
             />
             <h1
-              class="mb20 mt0 cl-mine-shaft product-name"
+              class="mb10 mt0 cl-mine-shaft product-name"
               data-testid="productName"
             >
               {{ getCurrentProduct.name | htmlDecode }}
-              <web-shareProductQuantity
+              <web-share
                 :title="getCurrentProduct.name | htmlDecode"
                 text="Check this product!"
                 class="web-share"
@@ -34,7 +34,7 @@
                 :custom-options="getCurrentCustomOptions"
               />
             </div>
-            <section class="container px0 pt0 mb15 cl-accent details">
+            <section class="container p0 pt0 mb15 cl-accent details">
               <div class="h4 details-wrapper" :class="{'details-wrapper--open': detailsOpen}">
                 <div class="row between-md m0">
                   <div class="lh30 h5" v-html="getCurrentProduct.description" />
@@ -54,6 +54,10 @@
               </div>
             </section>
 
+            <div class="row mb15 m0 p0 shipping-block">
+              <cms-block :identifier="'shipping-block'" />
+            </div>
+
             <product-links
               v-if="getCurrentProduct.type_id =='grouped'"
               :products="getCurrentProduct.product_links"
@@ -66,8 +70,8 @@
               v-else-if="getCurrentProduct.custom_options && getCurrentProduct.custom_options.length > 0"
               :product="getCurrentProduct"
             />
-            <div class="row m0">
-              <div class="col-md-6 cl-primary variants" v-if="getCurrentProduct.type_id =='configurable'">
+            <div class="row m0 p0">
+              <div class="w-auto border-box p0 cl-primary variants" v-if="getCurrentProduct.type_id =='configurable'">
                 <div
                   class="error"
                   v-if="getCurrentProduct.errors && Object.keys(getCurrentProduct.errors).length > 0"
@@ -75,7 +79,7 @@
                   {{ getCurrentProduct.errors | formatProductMessages }}
                 </div>
                 <div class="h5" v-for="option in getProductOptions" :key="option.id">
-                  <div class="row top-xs m0 pt0 pb15 variants-wrapper">
+                  <div class="row top-xs m0 pt0 pb10 variants-wrapper">
                     <div v-if="option.label == 'Color'">
                       <div class="variants-label pb10" data-testid="variantsLabel">
                         {{ 'Choose color' }}
@@ -137,7 +141,7 @@
               <add-to-cart
                 :product="getCurrentProduct"
                 :disabled="isAddToCartDisabled"
-                class="col-xs-12 col-sm-4 col-md-6"
+                class="col-md"
               />
               <AddToCompare :product="getCurrentProduct" />
               <AddToWishlist :product="getCurrentProduct" />
@@ -148,7 +152,7 @@
       </div>
     </section>
     <lazy-hydrate when-idle>
-      <related-products type="related" />
+      <new-related-products type="related" />
     </lazy-hydrate>
     <lazy-hydrate when-idle>
       <related-products type="upsell" :heading="$t('We found other products you might like')" />
@@ -197,6 +201,8 @@ import ProductPrice from 'theme/components/core/ProductPrice.vue'
 import { doPlatformPricesSync } from '@vue-storefront/core/modules/catalog/helpers'
 import { filterChangedProduct } from '@vue-storefront/core/modules/catalog/events'
 import ProductQtyIncrement from 'theme/components/core/blocks/ProductQtyIncrement.vue'
+import CmsBlock from 'theme/components/core/blocks/Cms/Block'
+import NewRelatedProducts from 'theme/components/core/blocks/Product/RelatedProducts.vue'
 
 export default {
   components: {
@@ -217,7 +223,9 @@ export default {
     SizeGuide,
     LazyHydrate,
     ProductPrice,
-    ProductQtyIncrement
+    ProductQtyIncrement,
+    CmsBlock,
+    NewRelatedProducts
   },
   mixins: [ProductOption],
   directives: { focusClean },
@@ -575,11 +583,20 @@ $bg-secondary: color(secondary, $colors-background);
 </style>
 
 <style lang="scss">
+@import '~theme/css/variables/colors';
+@import '~theme/css/helpers/functions/color';
+$color-white: color(white);
+$gainsboro: color(gainsboro);
+$light-grey: color(light-grey);
+$dark-grey: color(dark-grey);
+$mine-shaft: color(mine-shaft);
+$green: color(green);
+
 .price {
-  border-bottom: solid 1px #E0E0E0;
+  border-bottom: solid 1px $gainsboro;
 
   .h2 {
-    color: #4ED67D;
+    color: $green;
   }
 }
 
@@ -590,6 +607,7 @@ $bg-secondary: color(secondary, $colors-background);
     margin: 0 15px;
   }
 }
+
 .variants-wrapper {
   button.color {
     height: 62px;
@@ -602,10 +620,33 @@ $bg-secondary: color(secondary, $colors-background);
     }
   }
 }
+
+button.button-full {
+  height: 62px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  max-width: 432px;
+  font-weight: 700;
+
+  .material-icons {
+    color: $green;
+    padding-right: 15px;
+  }
+
+  &:hover {
+    background-color: $light-grey;
+  }
+
+  &:clicked {
+    background-color: $dark-grey;
+  }
+}
+
 button.add-to-compare, button.wishlist {
   height: 62px;
   width: 62px;
-  border: 1px solid #E0E0E0;
+  border: 1px solid $gainsboro;
   background: white;
   margin-left: 5px;
   text-align: left;
@@ -615,6 +656,146 @@ button.add-to-compare, button.wishlist {
 
   span {
     display: none;
+  }
+}
+
+.shipping-block {
+  background-color: $color-white;
+
+  .cms-content {
+    width: 100%;
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+
+      li {
+        width: calc(50% - 31px);
+        float: left;
+        padding: 17px 15px;
+        line-height: 24px;
+
+        &:last-child {
+          border-left: solid 1px #E0E0E0;
+        }
+
+        &:before {
+          content: "";
+          background-image: url("/assets/icons/ic_delivery.svg");
+          background-size: 40px;
+          background-position: center;
+          background-repeat: no-repeat;
+          display: block;
+          width: 40px;
+          float: left;
+          position: relative;
+          height: 30px;
+          margin: 10px 25px 0 10px;
+        }
+      }
+    }
+  }
+}
+
+.related-products {
+  .product {
+    border: solid 1px $gainsboro;
+    padding: 30px;
+
+    .product-cover {
+      width: 140px;
+      height: 140px;
+      float: left;
+      border: solid 1px $gainsboro;
+      margin-right: 23px;
+    }
+
+    .product-info {
+      width: calc(100% - 180px);
+      float: left;
+      text-align: left;
+
+      p {
+        font-size: 20px;
+        font-weight: 700;
+        color: $mine-shaft;
+        line-height: 28px;
+      }
+
+      .price {
+        color: $green;
+        font-size: 18px;
+        display: block;
+        padding-bottom: 15px;
+        border-bottom: none;
+        line-height: 26px;
+      }
+
+      button {
+        width: auto;
+        min-width: 170px;
+        height: 52px;
+
+        .material-icons {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+.new-collection {
+  .collection {
+    position: relative;
+  }
+
+  .VueCarousel-wrapper, .VueCarousel {
+    position: inherit;
+  }
+
+  .VueCarousel {
+    .VueCarousel-navigation {
+      position: absolute;
+      margin-top: -65px;
+      right: 0;
+      text-align: right;
+      display: block;
+      width: 100%;
+      top: 0;
+      float: left;
+
+      .VueCarousel-navigation-prev, .VueCarousel-navigation-next {
+        border: solid 1px $gainsboro;
+        padding: 8px;
+        margin-right: -8px;
+        right: 0;
+        top: 0;
+        left: inherit;
+        background-color: $color-white;
+        border-radius: 16px;
+        height: 32px;
+        color: $green;
+        line-height: 32px;
+        position: inherit;
+        display: flex;
+        width: 70px;
+        align-items: center;
+        justify-content: center;
+        float: right;
+        transform: inherit;
+      }
+
+      .VueCarousel-navigation-prev {
+        right: 105px;
+      }
+
+      .VueCarousel-navigation-next {
+        right: 30px;
+      }
+    }
   }
 }
 </style>

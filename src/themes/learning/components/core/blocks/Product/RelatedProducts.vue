@@ -1,34 +1,28 @@
 <template>
   <section
-    class="pt20 pb50 new-collection bg-cl-secondary px15"
+    class="pt20 pb50 related-products container px15"
     v-if="getCurrentRelatedProducts.length"
   >
-    <div class="container">
-      <div>
-        <header class="col-md-12">
-          <h3 class="my30">
-            {{ heading }}
-          </h3>
-        </header>
-      </div>
-      <product-slider
-        columns="4"
-        :products="getCurrentRelatedProducts"
-        :config="sliderConfig"
-      />
+    <div>
+      <header class="col-md-12 p0">
+        <h3 class="my30">
+          {{ heading }}
+        </h3>
+      </header>
     </div>
+    <product-listing columns="2" :products="getCurrentRelatedProducts" :add-to-cart="true" />
   </section>
 </template>
 
 <script>
-import ProductSlider from 'theme/components/core/ProductsSlider'
+import ProductListing from 'theme/components/core/ProductListing'
 import { mapGetters } from 'vuex'
 import { prepareRelatedQuery } from '@vue-storefront/core/modules/catalog/queries/related'
 import i18n from '@vue-storefront/i18n'
 import config from 'config'
 
 export default {
-  name: 'Related',
+  name: 'RelatedProducts',
   props: {
     type: {
       type: String,
@@ -51,7 +45,7 @@ export default {
     }
   },
   components: {
-    ProductSlider
+    ProductListing
   },
   beforeMount () {
     this.$bus.$on('product-after-load', this.refreshList)
@@ -87,7 +81,7 @@ export default {
 
       const { items } = await this.$store.dispatch('product/findProducts', {
         query: relatedProductsQuery,
-        size: 8,
+        size: 2,
         options: {
           populateRequestCacheTags: false,
           prefetchGroupProducts: false

@@ -1,5 +1,5 @@
 <template>
-  <div class="base-input-number col-md-6">
+  <div class="base-input-number border-box w-auto ml15">
     <label class="base-input-number__label cl-primary flex h6 row m0" :for="getInputId">
       {{ name }}
       <span class="ml10">({{ max }} {{ $t(' available') }})</span>
@@ -161,8 +161,6 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .base-input-number {
-  width: 100%;
-
   &__input {
     border-style: solid;
     border-width: 0 0 1px 0;

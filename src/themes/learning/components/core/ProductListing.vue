@@ -6,7 +6,7 @@
       class="col-sm-6 flex"
       :class="['col-md-' + (12/columns)%10, wide(product.sale, product.new, key)]"
     >
-      <product-tile :product="product" />
+      <product-tile :product="product" :add-to-cart="addToCart" />
     </div>
   </div>
 </template>
@@ -27,6 +27,10 @@ export default {
     columns: {
       type: [Number, String],
       required: true
+    },
+    addToCart: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

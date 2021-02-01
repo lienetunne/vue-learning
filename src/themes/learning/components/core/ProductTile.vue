@@ -1,7 +1,7 @@
 <template>
   <div class="product align-center w-100 pb20" v-observe-visibility="visibilityChanged">
     <div class="product__icons">
-      <AddToWishlist :product="product">
+      <AddToWishlist :product="product" v-if="!addToCart">
         <div
           class="product__icon"
           :class="{'product__icon--active': isOnWishlist }"
@@ -10,7 +10,7 @@
           <i class="material-icons">{{ favoriteIcon }}</i>
         </div>
       </AddToWishlist>
-      <AddToCompare :product="product">
+      <AddToCompare :product="product" v-if="!addToCart">
         <div
           class="product__icon"
           :class="{'product__icon--active':isOnCompare } "
@@ -21,7 +21,7 @@
       </AddToCompare>
     </div>
     <router-link
-      class="block no-underline product-link"
+      class="block no-underline product-link flex"
       :to="productLink"
       data-testid="productLink"
     >
@@ -38,24 +38,33 @@
         />
       </div>
 
-      <p class="mb0 cl-accent mt10" v-if="!onlyImage">
-        {{ product.name | htmlDecode }}
-      </p>
+      <div class="product-info">
+        <p class="mb0 cl-accent mt10" v-if="!onlyImage">
+          {{ product.name | htmlDecode }}
+        </p>
 
-      <span
-        class="price-original mr5 lh30 cl-secondary"
-        v-if="product.special_price && parseFloat(product.original_price_incl_tax) > 0 && !onlyImage"
-      >{{ product.original_price_incl_tax | price(storeView) }}</span>
+        <span
+          class="price-original mr5 lh30 cl-secondary"
+          v-if="product.special_price && parseFloat(product.original_price_incl_tax) > 0 && !onlyImage"
+        >{{ product.original_price_incl_tax | price(storeView) }}</span>
 
-      <span
-        class="price-special lh30 cl-accent weight-700"
-        v-if="product.special_price && parseFloat(product.special_price) > 0 && !onlyImage"
-      >{{ product.price_incl_tax | price(storeView) }}</span>
+        <span
+          class="price-special lh30 cl-accent weight-700"
+          v-if="product.special_price && parseFloat(product.special_price) > 0 && !onlyImage"
+        >{{ product.price_incl_tax | price(storeView) }}</span>
 
-      <span
-        class="lh30 cl-secondary"
-        v-if="!product.special_price && parseFloat(product.price_incl_tax) > 0 && !onlyImage"
-      >{{ product.price_incl_tax | price(storeView) }}</span>
+        <span
+          class="price lh30 cl-secondary"
+          v-if="!product.special_price && parseFloat(product.price_incl_tax) > 0 && !onlyImage"
+        >{{ product.price_incl_tax | price(storeView) }}</span>
+
+        <div v-if="addToCart">
+          <add-to-cart
+            :product="product"
+            class="col-md"
+          />
+        </div>
+      </div>
     </router-link>
   </div>
 </template>
@@ -70,13 +79,15 @@ import AddToCompare from 'theme/components/core/blocks/Compare/AddToCompare'
 import { IsOnWishlist } from '@vue-storefront/core/modules/wishlist/components/IsOnWishlist'
 import { IsOnCompare } from '@vue-storefront/core/modules/compare/components/IsOnCompare'
 import { currentStoreView } from '@vue-storefront/core/lib/multistore'
+import AddToCart from 'theme/components/core/AddToCart.vue'
 
 export default {
   mixins: [ProductTile, IsOnWishlist, IsOnCompare],
   components: {
     ProductImage,
     AddToWishlist,
-    AddToCompare
+    AddToCompare,
+    AddToCart
   },
   props: {
     labelsActive: {
@@ -84,6 +95,10 @@ export default {
       default: true
     },
     onlyImage: {
+      type: Boolean,
+      default: false
+    },
+    addToCart: {
       type: Boolean,
       default: false
     }

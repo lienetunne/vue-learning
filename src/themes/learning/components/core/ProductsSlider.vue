@@ -15,7 +15,7 @@
           <div class="col-md-12">
             <div class="center-xs cool-stuff-collection">
               <no-ssr>
-                <carousel v-bind="config" @pageChange="setMuted">
+                <carousel v-bind="config" :navigation-next-label="labelNext" :navigation-enabled="true" :navigation-prev-label="labelPrev" :pagination-enabled="false" @pageChange="setMuted" pagination-position="top">
                   <slide
                     v-for="product in products"
                     :key="product.id"
@@ -24,7 +24,6 @@
                       class="collection-product"
                       :product="product"
                       :labels-active="false"
-                      :only-image="true"
                     />
                   </slide>
                 </carousel>
@@ -65,7 +64,9 @@ export default {
   },
   data () {
     return {
-      currentPage: 0
+      currentPage: 0,
+      labelPrev: '<span class="material-icons">\n' + 'keyboard_backspace\n' + '</span>',
+      labelNext: '<span class="material-icons">\n' + 'arrow_right_alt\n' + '</span>'
     }
   },
   methods: {
