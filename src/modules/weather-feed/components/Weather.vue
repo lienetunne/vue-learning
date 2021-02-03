@@ -28,7 +28,7 @@
                 text: $t('Field is required.')
               },
               {
-                condition: !validateDate(),
+                condition: !$v.selectedDate.isValidDate,
                 text: $t(`Date should be from ${ minDate } to ${ maxDate }.`)
               }
             ]"
@@ -71,11 +71,16 @@
 </template>
 
 <script>
-import { maxValue, minValue, required, between, common, numeric } from 'vuelidate/lib/validators'
+import { required, helpers } from 'vuelidate/lib/validators'
 import ButtonFull from 'theme/components/theme/ButtonFull.vue'
 import dayjs from 'dayjs';
 import { mapGetters, mapActions } from 'vuex'
 import BaseInput from 'theme/components/core/blocks/Form/BaseInput.vue'
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import isBetween from 'dayjs/plugin/isBetween';
+dayjs.extend(customParseFormat);
+dayjs.extend(isBetween);
+const validate = (params) => (value) => dayjs(value, 'DD/MM/YYYY').format('DD/MM/YYYY') === value && dayjs(value).isBetween(params.mindDate, params.maxDate, null, '[]');
 
 export default {
   name: 'WeatherFeed',
@@ -94,14 +99,15 @@ export default {
       inputData: null,
       maxDate: null,
       minDate: null,
-      weatherData: [],
+      weatherData: null,
       selectedDate: null
     }
   },
   validations () {
     return {
       selectedDate: {
-        required
+        required,
+        isValidDate: validate({ minDate: this.mindDate, maxDate: this.maxDate })
       }
     }
   },
@@ -121,7 +127,8 @@ export default {
       }
     },
     submitWeather () {
-      if (!this.$v.$invalid && this.validateDate()) {
+      this.$v.$touch();
+      if (!this.$v.$invalid) {
         this.inputData = this.getForecast;
         this.getForecast.forecast.forecastday.forEach(value => {
           if (dayjs(value.date).format('DD/MM/YYYY') === this.selectedDate) {
@@ -134,16 +141,6 @@ export default {
       this.minDate = dayjs().format('DD/MM/YYYY');
       const numberOfDaysToAdd = 9;
       this.maxDate = dayjs().add(numberOfDaysToAdd, 'day').format('DD/MM/YYYY');
-    },
-    validateDate () {
-      const customParseFormat = require('dayjs/plugin/customParseFormat');
-      dayjs.extend(customParseFormat);
-      const isBetween = require('dayjs/plugin/isBetween');
-      dayjs.extend(isBetween);
-      const dayFormatValid = dayjs(this.selectedDate, 'DD/MM/YYYY').format('DD/MM/YYYY') === this.selectedDate;
-      if (dayFormatValid) {
-        return dayjs(this.selectedDate).isBetween(this.minDate, this.maxDate, null, '[]');
-      }
     }
   },
   watch: {
