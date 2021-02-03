@@ -34,16 +34,6 @@ export default {
       default: i18n.t('Similar products')
     }
   },
-  data () {
-    return {
-      sliderConfig: {
-        perPage: 1,
-        perPageCustom: [[576, 2], [1024, 4]],
-        paginationEnabled: true,
-        loop: true
-      }
-    }
-  },
   components: {
     ProductListing
   },

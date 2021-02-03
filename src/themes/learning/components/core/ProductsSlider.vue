@@ -65,8 +65,8 @@ export default {
   data () {
     return {
       currentPage: 0,
-      labelPrev: '<span class="material-icons">\n' + 'keyboard_backspace\n' + '</span>',
-      labelNext: '<span class="material-icons">\n' + 'arrow_right_alt\n' + '</span>'
+      labelPrev: '<span class="material-icons">keyboard_backspace</span>',
+      labelNext: '<span class="material-icons">arrow_right_alt</span>'
     }
   },
   methods: {

@@ -20,7 +20,7 @@ export const module: Module<WeatherFeedState, RootState> = {
     }
   },
   actions: {
-    getCurrent ({ commit }) {
+    async loadCurrent ({ commit }) {
       fetch(config.weather.endpoint.current, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -33,7 +33,7 @@ export const module: Module<WeatherFeedState, RootState> = {
           commit(types.SET_WEATHER_FEED, res.result)
         })
     },
-    getForecast ({ commit }) {
+    async loadForecast ({ commit }) {
       fetch(config.weather.endpoint.forecast, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -48,7 +48,7 @@ export const module: Module<WeatherFeedState, RootState> = {
     }
   },
   getters: {
-    current: state => state.current,
-    forecast: state => state.forecast
+    getCurrent: state => state.current,
+    getForecast: state => state.forecast
   }
 }
