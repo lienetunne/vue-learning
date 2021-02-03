@@ -4,11 +4,11 @@
       {{ $t('Choose') }}
     </div>
     <div class="row col-md-12 flex ">
-      <input type="radio" id="currentWeather" name="weather" value="currentWeather" @click="getWeather('current')">
+      <input type="radio" id="currentWeather" name="weather" value="current" v-model="weatherData">
       <label for="currentWeather">{{ $t('Load Current Weather') }}</label><br>
-      <input type="radio" id="forecastWeather" name="weather" value="forecastWeather" @click="getWeather('forecast')">
+      <input type="radio" id="forecastWeather" name="weather" value="forecast" v-model="weatherData">
       <label for="forecastWeather">{{ $t('Load Forecast Weather') }}</label><br>
-      <input type="radio" id="other" name="weather" value="other" @click="getWeather()">
+      <input type="radio" id="other" name="weather" value="input" v-model="weatherData">
       <label for="other">{{ $t('Other') }}</label>
     </div>
     <div class="row col-md-12 flex ">
@@ -20,7 +20,7 @@
             type="text"
             name="weatherData"
             v-model="selectedDate"
-            :placeholder="$t('01/12/2021 *')"
+            placeholder="01/12/2021 *"
             @blur="$v.$touch()"
             :validations="[
               {
@@ -38,35 +38,33 @@
           </button-full>
         </form>
       </div>
-      <div v-if="getCurrent.length !== 0 || getForecast.length !== 0">
-        <div v-if="weatherData === 'forecast'">
-          <ul v-for="day in getForecast.forecast.forecastday" :key="day.date_epoch">
-            <li>{{ $t('Date') }}{{ day.date }}</li>
-            <li>{{ $t('Min temp.') }}{{ day.day.mintemp_c }}</li>
-            <li>{{ $t('Max temp.') }}{{ day.day.maxtemp_c }}</li>
-            <li>{{ $t('Wind Speed') }}{{ day.day.maxwind_kph }}</li>
-            <li>{{ $t('Will it rain?') }}{{ day.day.daily_will_it_rain }}</li>
-          </ul>
-        </div>
-        <div v-else-if="weatherData === 'current'">
-          <ul>
-            <li>{{ getCurrent.current.temp_c }}</li>
-            <li>{{ getCurrent.current.wind_dir }}</li>
-            <li>{{ getCurrent.current.wind_kph }}</li>
-          </ul>
-        </div>
-        <div v-else-if="weatherData === 'input' && inputData">
-          <ul>
-            <li>{{ inputData.date }}</li>
-            <li>{{ inputData.day.mintemp_c }}</li>
-            <li>{{ inputData.day.maxtemp_c }}</li>
-            <li>{{ inputData.day.maxwind_kph }}</li>
-            <li>{{ inputData.day.daily_will_it_rain }}</li>
-          </ul>
-        </div>
+      <div v-if="weatherData === 'forecast'">
+        <ul v-for="day in getForecast.forecast.forecastday" :key="day.date_epoch">
+          <li>{{ $t('Date') }} {{ day.date }}</li>
+          <li>{{ $t('Min temp.') }} {{ day.day.mintemp_c }}</li>
+          <li>{{ $t('Max temp.') }} {{ day.day.maxtemp_c }}</li>
+          <li>{{ $t('Wind Speed') }} {{ day.day.maxwind_kph }}</li>
+          <li>{{ $t('Will it rain?') }} {{ day.day.daily_will_it_rain }}</li>
+        </ul>
+      </div>
+      <div v-else-if="weatherData === 'current'">
+        <ul>
+          <li>{{ getCurrent.current.temp_c }}</li>
+          <li>{{ getCurrent.current.wind_dir }}</li>
+          <li>{{ getCurrent.current.wind_kph }}</li>
+        </ul>
+      </div>
+      <div v-else-if="weatherData === 'input' && inputData">
+        <ul>
+          <li>{{ inputData.date }}</li>
+          <li>{{ inputData.day.mintemp_c }}</li>
+          <li>{{ inputData.day.maxtemp_c }}</li>
+          <li>{{ inputData.day.maxwind_kph }}</li>
+          <li>{{ inputData.day.daily_will_it_rain }}</li>
+        </ul>
       </div>
       <div v-else>
-        {{ $t('No data selected') }}
+        {{ $t('Please select...mzzz') }}
       </div>
     </div>
   </div>
@@ -96,7 +94,7 @@ export default {
       inputData: null,
       maxDate: null,
       minDate: null,
-      weatherData: null,
+      weatherData: [],
       selectedDate: null
     }
   },
@@ -112,19 +110,13 @@ export default {
       loadCurrentWeather: 'weather-feed/loadCurrent',
       loadForecastWeather: 'weather-feed/loadForecast'
     }),
-    getWeather (type) {
-      if (type === 'current') {
-        this.resetWeatherType();
+    getWeather () {
+      if (this.weatherData === 'current') {
         this.loadCurrentWeather();
-        this.weatherData = type;
-      } else if (type === 'forecast') {
-        this.resetWeatherType();
+      } else if (this.weatherData === 'forecast') {
         this.loadForecastWeather();
-        this.weatherData = type;
       } else {
-        this.resetWeatherType();
         this.loadForecastWeather();
-        this.weatherData = 'input';
         this.setDate();
       }
     },
@@ -137,9 +129,6 @@ export default {
           }
         })
       }
-    },
-    resetWeatherType () {
-      this.weatherData = null;
     },
     setDate () {
       this.minDate = dayjs().format('DD/MM/YYYY');
@@ -154,6 +143,13 @@ export default {
       const dayFormatValid = dayjs(this.selectedDate, 'DD/MM/YYYY').format('DD/MM/YYYY') === this.selectedDate;
       if (dayFormatValid) {
         return dayjs(this.selectedDate).isBetween(this.minDate, this.maxDate, null, '[]');
+      }
+    }
+  },
+  watch: {
+    weatherData: {
+      handler () {
+        this.getWeather();
       }
     }
   }
